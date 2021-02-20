@@ -34,8 +34,13 @@ class ProductCrudController extends CrudController
     {
         // $this->crud->setValidation(StoreRequest::class);
         // $this->crud->addField()
+	
         // or just do everything you've done for the Create Operation
         // $this->crud->setupCreateOperation();
+	
+	// You can also do things depending on the current entry
+	// (the database item being edited or updated)
+	// if ($this->crud->getCurrentEntry()->smth == true) {}
     }
 }
 ```
@@ -95,23 +100,23 @@ class ProductCrudController extends CrudController
         // $this->crud->addField(['type' => 'hidden', 'name' => 'author_id']);
         // $this->crud->removeField('password_confirmation');
 	
-	// Note: By default Backpack ONLY saves the inputs that were added onpage using Backpack fields.
+	// Note: By default Backpack ONLY saves the inputs that were added on page using Backpack fields.
 	// This is done by stripping the request of all inputs that do NOT match Backpack fields for this
 	// particular operation. This is an added security layer, to protect your database from malicious
 	// users who could theoretically add inputs using DeveloperTools or JavaScript. If you're not properly
 	// using $guarded or $fillable on your model, malicious inputs could get you into trouble.
 	
-	// However, if you know you have proper $guarded or $fillable on your model, andyou want to manipulate 
+	// However, if you know you have proper $guarded or $fillable on your model, and you want to manipulate 
 	// the request directly to add or remove request parameters, you can also do that.
 	// We have a config value you can set, either inside your operation in `config/backpack/crud.php` if
 	// you want it to apply to all CRUDs, or inside a particular CrudController:
     	// $this->crud->setOperationSetting('saveAllInputsExcept', ['_token', '_method', 'http_referrer', 'current_tab', 'save_action']);
 	// The above will make Backpack store all inputs EXCEPT for the ones it uses for various features.
 	// So you can manipulate the request and add any request variable you'd like.
-	// $this->crud->request->request->add(['author_id'=> backpack_user()->id]);
-	// $this->crud->request->request->remove('password_confirmation');
-	// $this->crud->request->request->add(['author_id'=> backpack_user()->id]);
-	// $this->crud->request->request->remove('password_confirmation');
+	// $this->crud->getRequest()->request->add(['author_id'=> backpack_user()->id]);
+	// $this->crud->getRequest()->request->remove('password_confirmation');
+	// $this->crud->getRequest()->request->add(['author_id'=> backpack_user()->id]);
+	// $this->crud->getRequest()->request->remove('password_confirmation');
 	
         $response = $this->traitUpdate();
         // do something after save
@@ -130,7 +135,7 @@ class ProductCrudController extends CrudController
 For localized apps, you can let your admins edit multi-lingual entries. Translations are stored using [spatie/laravel-translatable](https://github.com/spatie/laravel-translatable).
 
 In order to make one of your Models translatable (localization), you need to:
-0. Be running MySQL 5.7+ (or a PosgreSQL with JSON column support);
+0. Be running MySQL 5.7+ (or a PostgreSQL with JSON column support);
 1. [Install spatie/laravel-translatable](https://github.com/spatie/laravel-translatable#installation);
 2. In your database, make all translatable columns either JSON or TEXT.
 3. Use Backpack's ```HasTranslations``` trait on your model (instead of using spatie's ```HasTranslations```) and define what fields are translatable, inside the ```$translatable``` property. For example:
@@ -167,7 +172,7 @@ class Product extends Model
 
 Change the languages available to translate to/from, in your crud config file (```config/backpack/crud.php```). By default there are quite a few enabled (English, French, German, Italian, Romanian).
 
-Additionally, if you have slugs, you'll need to use backpack's classes instead of the ones provided by cviebrock/eloquent-sluggable:
+Additionally, if you have slugs (but only if you need translatable slugs), you'll need to use backpack's classes instead of the ones provided by cviebrock/eloquent-sluggable:
 
 ```php
 <?php
@@ -216,6 +221,7 @@ class Category extends Model
     }
 }
 ```
+> If your slugs are not translatable, use the ```cviebrock/eloquent-sluggable``` traits. The Backpack's ```Sluggable``` trait saves your slug as a JSON object, regardless of the ```slug``` field being defined inside the ```$translatable``` property.
 
 <a name="separate-validation"></a>
 ## Separate Validation Rules for Create and Update

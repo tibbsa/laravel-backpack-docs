@@ -55,7 +55,7 @@ function() { // if the filter is active (the GET parameter "draft" exits)
 > - you can get the filter value by specifying a parameter to the function (ex: ```$value```);
 > - you have access to other request variables using ```$this->crud->request```;
 > - you also have read/write access to public properties using ```$this->crud```;
-> - when building complicated "OR" logic, make sure the first "where" in your closure is a "where" and only the subsequent are "orWhere"; Laravel 5.3+ no longer convers the first "orWhere" into a "where";
+> - when building complicated "OR" logic, make sure the first "where" in your closure is a "where" and only the subsequent are "orWhere"; Laravel 5.3+ no longer converts the first "orWhere" into a "where";
 
 <a name="filter-types"></a>
 ## Filter types
@@ -80,7 +80,7 @@ function() { // if the filter is active
 <a name="text"></a>
 ### Text
 
-Shows a text input. Most useful for letting the user filter through information that not shown as a column in the CRUD table - otherwise they could just use the DataTables search field.
+Shows a text input. Most useful for letting the user filter through information that's not shown as a column in the CRUD table - otherwise they could just use the DataTables search field.
 
 ![Backpack CRUD Text Filter](https://backpackforlaravel.com/uploads/docs/filters/text.png)
 
@@ -104,15 +104,15 @@ Show a datepicker. The user can select one day.
 ![Backpack CRUD Date Filter](https://backpackforlaravel.com/uploads/docs/filters/date.png)
 
 ```php
-        $this->crud->addFilter([ // date filter
-          'type' => 'date',
-          'name' => 'date',
-          'label'=> 'Date'
-        ],
-        false,
-        function($value) { // if the filter is active, apply these constraints
-          // $this->crud->addClause('where', 'date', $value);
-        });
+$this->crud->addFilter([ // date filter
+  'type' => 'date',
+  'name' => 'date',
+  'label'=> 'Date'
+],
+false,
+function($value) { // if the filter is active, apply these constraints
+  // $this->crud->addClause('where', 'date', $value);
+});
 ```
 
 <a name="date-range"></a>
@@ -123,17 +123,17 @@ Show a daterange picker. The user can select a start date and an end date.
 ![Backpack CRUD Date Range Filter](https://backpackforlaravel.com/uploads/docs/filters/date_range.png)
 
 ```php
-        $this->crud->addFilter([ // daterange filter
-           'type' => 'date_range',
-           'name' => 'from_to',
-           'label'=> 'Date range'
-         ],
-         false,
-         function($value) { // if the filter is active, apply these constraints
-           // $dates = json_decode($value);
-           // $this->crud->addClause('where', 'date', '>=', $dates->from);
-           // $this->crud->addClause('where', 'date', '<=', $dates->to . ' 23:59:59');
-         });
+$this->crud->addFilter([ // daterange filter
+   'type' => 'date_range',
+   'name' => 'from_to',
+   'label'=> 'Date range'
+],
+false,
+function($value) { // if the filter is active, apply these constraints
+   // $dates = json_decode($value);
+   // $this->crud->addClause('where', 'date', '>=', $dates->from);
+   // $this->crud->addClause('where', 'date', '<=', $dates->to . ' 23:59:59');
+});
 ```
 
 <a name="dropdown"></a>

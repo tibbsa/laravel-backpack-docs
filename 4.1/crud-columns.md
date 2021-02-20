@@ -202,7 +202,9 @@ Show custom HTML based on a closure you specify in your EntityCrudController. Pl
 ### date
 
 
-The date column will show a localized date in the default date format (as specified in the ```config/backpack/base.php``` file), whether the attribute is casted as date in the model or not:
+The date column will show a localized date in the default date format (as specified in the ```config/backpack/base.php``` file), whether the attribute is casted as date in the model or not.
+
+Note that the ```format``` attribute uses ISO date formatting parameters and not PHP ```date()``` formatters.  See <https://carbon.nesbot.com/docs/#iso-format-available-replacements> for more information.
 
 ```php
 [
@@ -219,7 +221,10 @@ The date column will show a localized date in the default date format (as specif
 ### datetime
 
 
-The date column will show a localized datetime in the default datetime format (as specified in the ```config/backpack/base.php``` file), whether the attribute is casted as datetime in the model or not:
+The date column will show a localized datetime in the default datetime format (as specified in the ```config/backpack/base.php``` file), whether the attribute is casted as datetime in the model or not.
+
+Note that the ```format``` attribute uses ISO date formatting parameters and not PHP ```date()``` formatters.  See <https://carbon.nesbot.com/docs/#iso-format-available-replacements> for more information.
+
 
 ```php
 [
@@ -304,11 +309,11 @@ The model_function column will output a function on your main model. Its definit
 For this example, if your model would feature this method, it would return the link to that entity:
 ```php
 public function getSlugWithLink() {
-        return '<a href="'.url($this->slug).'" target="_blank">'.$this->slug.'</a>';
-    }
+    return '<a href="'.url($this->slug).'" target="_blank">'.$this->slug.'</a>';
+}
 ```
 
-**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent that JS and CSS from reaching your DB in the first place.
+**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent JS and CSS from reaching your DB in the first place.
 
 <hr>
 
@@ -329,7 +334,7 @@ If the function you're trying to use returns an object, not a string, you can us
 ],
 ```
 
-**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent that JS and CSS from reaching your DB in the first place.
+**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent JS and CSS from reaching your DB in the first place.
 
 <hr>
 
@@ -421,7 +426,8 @@ Output the related entries, no matter the relationship:
 
 Its name and definition is the same as for the relationship *field type*:
 ```php
-[  // any type of relationship
+[  
+   // any type of relationship
    'name'         => 'tags', // name of relationship method in the model
    'type'         => 'relationship',
    'label'        => 'Tags', // Table column heading
@@ -442,13 +448,25 @@ Backpack tries to guess which attribute to show for the related item. Something 
 Shows the number of items that are related to the current entry, for a particular relationship.
 
 ```php
-[  // non-relationship count
+[
+   // relationship count
    'name'      => 'tags', // name of relationship method in the model
    'type'      => 'relationship_count', 
    'label'     => 'Tags', // Table column heading
    // OPTIONAL
    // 'suffix' => ' tags', // to show "123 tags" instead of "123 items"
 ],
+```
+
+**Important Note:** This column will load ALL related items onto the page. Which is not a problem normally, for small tables. But if your related table has thousands or millions of entries, it will considerably slow down the page. For a much more performant option, with the same result, you can add a fake column to the results using Laravel's `withCount()` method, then use the `text` column to show that number. That will be a lot faster, and the end-result is identical from the user's perspective. For the same example above (number of tags) this is how it will look:
+```
+$this->crud->query->withCount('tags'); // this will add a tags_count column to the results
+$this->crud->addColumn([
+   'name'      => 'tags_count', // name of relationship method in the model
+   'type'      => 'text', 
+   'label'     => 'Tags', // Table column heading
+   'suffix'    => ' tags', // to show "123 tags" instead of "123"
+]);
 ```
 
 <hr>
@@ -491,7 +509,7 @@ The text column will just output the text value of a db column (or model attribu
 ],
 ```
 
-**Advanced use case:** The ```text``` column type can also show the attribute of a 1-1 relationship. If you have a relationship (like ```parent()```) set up in your Model, you can use relationship and attibute in the ```name```, using dot notation:
+**Advanced use case:** The ```text``` column type can also show the attribute of a 1-1 relationship. If you have a relationship (like ```parent()```) set up in your Model, you can use relationship and attribute in the ```name```, using dot notation:
 ```php
 [
     'name'  => 'parent.title',
@@ -531,7 +549,7 @@ Show a particular text depending on the value of the attribute.
     'name'    => 'status',
     'label'   => 'Status',
     'type'    => 'select_from_array',
-    'options' => [‘draft’ => ‘Draft (invisible)’, ‘published’ => ‘Published (visible)’],
+    'options' => ['draft' => 'Draft (invisible)', 'published' => 'Published (visible)'],
 ],
 ```
 
@@ -766,7 +784,7 @@ $this->crud->addColumn([
 If you specify ```wrapper``` to a column, the entries in that column will be wrapped in the element you specify. Note that: 
 - To get an HTML anchor (a link), you can specify ```a``` for the element (but that's also the default); to get a paragraph you'd specify ```p``` for the element; to get an inline element you'd specify ```span``` for the element; etc;
 - Anything you declare in the ```wrapper``` array (other than ```element```) will be used as HTML attributes for that element (ex: ```class```, ```style```, ```target``` etc);
-- Each wrapper attribute can be declared as a string OR as a callback;
+- Each wrapper attribute, including the element itself, can be declared as a string OR as a callback;
 
 Let's take another example, and wrap a boolean column into a green/red span:
 
@@ -793,7 +811,7 @@ $this->crud->addColumn([
 <a name="choose-where-columns-are-visible"></a>
 ### Choose Where Columns are Visible
 
-Starting with Backpack\CRUD 3.5.0, you can choose to show/hide column in different contexts. You can pass ```true``` / ```false``` to the column attributes below, and Backpack will know to show the column or not, in different contexts:
+Starting with Backpack\CRUD 3.5.0, you can choose to show/hide columns in different contexts. You can pass ```true``` / ```false``` to the column attributes below, and Backpack will know to show the column or not, in different contexts:
 
 ```php
 $this->crud->addColumn([
@@ -868,4 +886,4 @@ You can make the last column be less important (and hide) by giving it an unreas
 $this->crud->setActionsColumnPriority(10000);
 ```
 
->Note that repsonsive tables adopt special behavior if the table is not able to show all columns. This includes displaying a vertical elipsis to the left of the row, and making the row clickable to reveal more detail. This behavior is automatic and is not manually controllable via a field property.
+>Note that responsive tables adopt special behavior if the table is not able to show all columns. This includes displaying a vertical ellipsis to the left of the row, and making the row clickable to reveal more detail. This behavior is automatic and is not manually controllable via a field property.

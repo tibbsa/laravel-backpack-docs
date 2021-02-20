@@ -2,7 +2,7 @@
 
 ---
 
-We've put toghether a working Laravel app (backend-only), that you can install on your machine. This should make it easier to:
+We've put together a working Laravel app (backend-only), that you can install on your machine. This should make it easier to:
 - see how it looks & feels;
 - see how it works;
 - change stuff in code, to see how easy it is to customize Backpack; 
@@ -18,6 +18,8 @@ In this [Demo repository](https://github.com/laravel-backpack/demo), we've:
 
 <a name="preview"></a>
 ## Demo Preview
+
+![https://user-images.githubusercontent.com/1032474/86720524-c5a1d480-c02d-11ea-87ed-d03b0197eb25.gif](https://user-images.githubusercontent.com/1032474/86720524-c5a1d480-c02d-11ea-87ed-d03b0197eb25.gif)
 
 If you just want to take a look at the Backpack interface and click around, you don't need to install the Demo. **Take a look at [demo.backpackforlaravel.com](https://demo.backpackforlaravel.com/admin) - we've installed for you.** The online demo is wiped and reinstalled every hour, on the hour.
 

@@ -2,7 +2,7 @@
 
 ---
 
-This will guide you to upgrade from Backpack 4.0 to 4.1. The steps are color-coded by the probablility that you will need it for your application: <span class="badge badge-info text-white" style="text-decoration: none;">High</span>, <span class="badge badge-warning text-white" style="text-decoration: none;">Medium</span> and <span class="badge badge-secondary-soft" style="text-decoration: none;">Low</span>.
+This will guide you to upgrade from Backpack 4.0 to 4.1. The steps are color-coded by the probability that you will need it for your application: <span class="badge badge-info text-white" style="text-decoration: none;">High</span>, <span class="badge badge-warning text-white" style="text-decoration: none;">Medium</span> and <span class="badge badge-secondary-soft" style="text-decoration: none;">Low</span>.
 
 <a name="requirements"></a>
 ## Requirements
@@ -107,6 +107,22 @@ No changes needed.
     ],
 ```
 
+- your ```App\User``` will need some changes for backpack to use it properly. It must use ```CrudTrait``` and ```HasRoles``` traits:
+
+```diff
+<?php namespace App;
+
++ use Backpack\CRUD\app\Models\Traits\CrudTrait;
++ use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Foundation\Auth\User as Authenticatable; 
+
+class User extends Authenticatable
+{
++    use CrudTrait;
++    use HasRoles;
+
+```
+
 Of course, if you actually _liked_ having a separate model for your admins, you can keep it. But we recommend removing it - since it's unnecessary. If you decide to keep the ```BackpackUser``` model, take note that we also removed the ```InheritsRelationsFromParentModel``` trait, that only ```BackpackUser``` was using. To pull that trait in, install [calebporzio/parental](https://github.com/calebporzio/parental) and use ```\Parental\HasParent``` instead of ```InheritsRelationsFromParentModel```.
 
 > **IMPORTANT:** If you use polymorphic relationships, you might have mentions of the ```App\Models\BackpackUser``` model in your BD. You will need to replace all those mentions in the DB with the standard ```App\User``` model.  
@@ -142,6 +158,8 @@ php artisan migrate
 # Are there any more entries that point to App\Models\BackpackUser?
 ```
 
+Another example of polymorphic relationships is the ```revisions``` table, if you've used it you may have references to ```App\Models\BackpackUser``` there too, please replace it with ```App\User```.
+
 <a name="controllers"></a>
 ### CrudControllers
 
@@ -167,6 +185,8 @@ Why? Since ```$this->request``` did nothing at all, we've removed it, to avoid a
 - **If you have ```$this->crud->request``` anywhere inside your custom CrudController logic**, please replace it with either ```$this->crud->getRequest()``` or ```$this->crud->setRequest()``` depending on what your intention is.
 
 <a name="step-12" href="#step-12" class="badge badge-warning text-white" style="text-decoration: none;">Step 12.</a> Inside CrudControllers, if you've used ```wrapperAttributes``` on fields, please note that it's now called ```wrapper```. Please search & replace ```wrapperAttributes``` with ```wrapper``` in your CrudControllers.
+
+Additionally, for the `select2_from_ajax` and `select2_from_ajax_multiple` field types, the inputs on the main form are no longer sent through the AJAX request by default. If you're using [dependant selects](https://backpackforlaravel.com/docs/4.1/crud-how-to#add-a-select2-field-that-depends-on-another-field), please make sure that you add `'include_all_form_fields' => true` to your `select2_from_ajax` and `select2_from_ajax_multiple` field definition to keep the same behaviour as before.
 
 <a href="assets"></a>
 ### CSS & JS Assets

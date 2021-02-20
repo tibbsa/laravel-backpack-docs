@@ -34,12 +34,12 @@ php artisan backpack:base:add-sidebar-content "<li><a href='{{ backpack_url('tag
 
   - Laravel 5.8
   - PHP 7.1.3+
-  - MySQL (recommended) / PosgreSQL / SQLite / SQL Server
+  - MySQL (recommended) / PostgreSQL / SQLite / SQL Server
 
 <a name="screenshots"></a>
 ### Screenshots
 
-Take a look at [our homepage](http://www.backpackforlaravel.com/).
+Take a look at [our homepage](https://backpackforlaravel.com/).
 
 <a name="demo"></a>
 ### Demo
@@ -75,5 +75,5 @@ For more, please see:
 
 We heavily recommend you spend a little time to understand Backpack, and only afterwards install and use it. Currently your options are:
 - **[Text Tutorial](/docs/{{version}}/getting-started-basics)** - 23 minutes
-- **[Email Tutorial](http://backpackforlaravel.com/getting-started-emails)** - 1 email per day, for 5 days, 5 minutes each
+- **[Email Tutorial](https://backpackforlaravel.com/getting-started-emails)** - 1 email per day, for 5 days, 5 minutes each
 - **Video Tutorial** - working on it

@@ -6,7 +6,7 @@ Backpack is a collection of Laravel packages that help you **build custom admini
 
 In a nutshell:
 
-- Backpack will provide you with a _visual interface_ for the admin panel (the HTML, the CSS, the JS); it pulls in the excellent [CoreUI](https://coreui.io/) theme, with our own design called [Backstrap](http://backstrap.net), adds authentication functionality & bubble notifications; when you decide to build a custom feature for your admin panel, you already have the HTML blocks for the UI, and it will look good;
+- Backpack will provide you with a _visual interface_ for the admin panel (the HTML, the CSS, the JS); it pulls in the excellent [CoreUI](https://coreui.io/) theme, with our own design called [Backstrap](https://backstrap.net), adds authentication functionality & bubble notifications; when you decide to build a custom feature for your admin panel, you already have the HTML blocks for the UI, and it will look good;
 - Backpack will help you build _sections where your admins can manipulate entries for Eloquent models_; we call them _CRUD Panels_ after the most basic operations: Create/Read/Update/Delete; after [understanding Backpack](/docs/{{version}}/getting-started-basics), you'll be able to create a CRUD panel for each entity in about 10 minutes / model:
 
 ```bash
@@ -28,13 +28,13 @@ php artisan backpack:crud tag #use singular, not plural
 We heavily recommend you spend a little time to understand Backpack, and only afterwards install and use it. Fortunately it's super-simple to get started. Using any of the options below will get you to a point where you can use Backpack in your projects:
 - **[Video Course](/docs/{{version}}/getting-started-videos)** - 31 minutes
 - **[Text Course](/docs/{{version}}/getting-started-basics)** - 20 minutes
-- **[Email Course](http://backpackforlaravel.com/getting-started-emails)** - 1 email per day, for 4 days, 5 minutes each
+- **[Email Course](https://backpackforlaravel.com/getting-started-emails)** - 1 email per day, for 4 days, 5 minutes each
 
 
 <br>
 <a href="/docs/{{version}}/getting-started-videos" class="btn btn-outline-info btn-sm shadow"><i class="fe fe-video"></i> Video Course</a>
 <a href="/docs/{{version}}/getting-started-basics" class="btn btn-outline-info btn-sm shadow"><i class="fe fe-file-text"></i> Text Course</a>
-<a href="http://backpackforlaravel.com/getting-started-emails" class="btn btn-outline-info btn-sm shadow"><i class="fe fe-inbox"></i> Email Course</a>
+<a href="https://backpackforlaravel.com/getting-started-emails" class="btn btn-outline-info btn-sm shadow"><i class="fe fe-inbox"></i> Email Course</a>
 
 ---
 
@@ -44,14 +44,13 @@ We heavily recommend you spend a little time to understand Backpack, and only af
 <a name="requirements"></a>
 ### Requirements
 
-  - Laravel 7 or Laravel 6
-  - PHP 7.2.5+
-  - MySQL (recommended) / PosgreSQL / SQLite / SQL Server
+  - Laravel 8.x, 7.x or 6.x
+  - MySQL (recommended) / PostgreSQL / SQLite / SQL Server
 
 <a name="how-does-it-look"></a>
 ### How does it look?
 
-- Take a look at [our homepage](http://www.backpackforlaravel.com/).
+- Take a look at [our homepage](https://backpackforlaravel.com/).
 - Play around in our [live demo](https://demo.backpackforlaravel.com/admin/login).
 - [Install the demo](/docs/{{version}}/demo) and fiddle with the code.
 

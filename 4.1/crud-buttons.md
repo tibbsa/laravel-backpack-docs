@@ -70,6 +70,8 @@ In this blade file, you can use:
 - ```$crud``` - the entire CrudPanel object;
 - ```$button``` - the button you're currently showing;
 
+Note: If you've opted to add a button from a model function (not a blade file), inside your model function you can use `$this` to get the current entry (so for example, you can do `$this->id`.
+
 <a name="examples"></a>
 ## Examples
 
@@ -89,7 +91,7 @@ Let's say we want to create a simple ```moderate.blade.php``` button. This butto
 Route::get('user/{id}/moderate', 'UserCrudController@moderate');
 ```
 
-- We can now create add a ```moderate()``` method to our ```UserCrudController```, which would moderate the user, and redirect back.
+- We can now add a ```moderate()``` method to our ```UserCrudController```, which would moderate the user, and redirect back.
 ```php
 public function moderate() 
 {
@@ -97,7 +99,7 @@ public function moderate()
 }
 ```
 
-- Now we can actually add this button to any of ```UserCrudController::setup()```:
+- Now we can actually add this button to any of ```UserCrudController::setupListOperation()```:
 ```php
 $this->crud->addButtonFromView('line', 'moderate', 'moderate', 'beginning');
 ```
@@ -107,7 +109,7 @@ $this->crud->addButtonFromView('line', 'moderate', 'moderate', 'beginning');
 
 Instead of creating a blade file for your button, you can use a function on your model to output the button's HTML.
 
-In your ```ArticleCrudController::setup()```:
+In your ```ArticleCrudController::setupListOperation()```:
 ```php
 // add a button whose HTML is returned by a method in the CRUD model
 $this->crud->addButtonFromModelFunction('line', 'open_google', 'openGoogle', 'beginning');
@@ -116,10 +118,10 @@ $this->crud->addButtonFromModelFunction('line', 'open_google', 'openGoogle', 'be
 In your ```Article``` model:
 
 ```php
-    public function openGoogle($crud = false)
-    {
-        return '<a class="btn btn-sm btn-link" target="_blank" href="http://google.com?q='.urlencode($this->text).'" data-toggle="tooltip" title="Just a demo custom button."><i class="fa fa-search"></i> Google it</a>';
-    }
+public function openGoogle($crud = false)
+{
+    return '<a class="btn btn-sm btn-link" target="_blank" href="http://google.com?q='.urlencode($this->text).'" data-toggle="tooltip" title="Just a demo custom button."><i class="fa fa-search"></i> Google it</a>';
+}
 ```
 
 
@@ -158,11 +160,10 @@ The steps would be:
               success: function(result) {
                   // Show an alert with the result
                   console.log(result,route);
-                  new PNotify({
-                      title: "Import done", // add extra info how many
+                  new Noty({
                       text: "Some Tx had been imported",
                       type: "success"
-                  });
+                  }).show();
 
                   // Hide the modal, if any
                   $('.modal').modal('hide');
@@ -171,11 +172,10 @@ The steps would be:
               },
               error: function(result) {
                   // Show an alert with the result
-                  new PNotify({
-                      title: "Import failed",
+                  new Noty({
                       text: "The new entry could not be created. Please try again.",
                       type: "warning"
-                  });
+                  }).show();
               }
           });
       }
@@ -188,7 +188,7 @@ The steps would be:
 Route::get('user/import', 'UserCrudController@import');
 ```
 
-- We can now create add a ```import()``` method to our ```UserCrudController```, which would import the users.
+- We can now add a ```import()``` method to our ```UserCrudController```, which would import the users.
 ```php
 public function import() 
 {
@@ -196,7 +196,7 @@ public function import()
 }
 ```
 
-- Now we can actually add this button to any of ```UserCrudController::setup()```:
+- Now we can actually add this button to any of ```UserCrudController::setupListOperation()```:
 ```php
 $this->crud->addButtonFromView('top', 'import', 'import', 'end');
 ```

@@ -21,6 +21,7 @@ For example:
 
 - a working Create operation;
 - correctly defined Eloquent relationships on both the primary Model, and the secondary Model;
+- a working Fetch operation to retrieve the secondary Model from the primary Model;
 - an understanding of what we call "_main_" and "_secondary_" in this case; using the same example as above, where you want to be able to add ```Categories``` in a modal, inside ```ArticleCrudController```'s create&update forms:
     - the _main entity_ would be Article (big form); 
     - the _secondary entity_ would be Category (small form, in a modal);
@@ -30,7 +31,7 @@ For example:
 
 To use the Create operation, you must:
 
-**Step 1. Use the operation trait on your secondary entity's CrudController** (aka. the entity that will gain the ability to be created inline, in our example CategoryCrudController):
+**Step 1. Use the operation trait on your secondary entity's CrudController** (aka. the entity that will gain the ability to be created inline, in our example CategoryCrudController). Make sure you use `InlineCreateOperation` *after* `CreateOperation`:
 
 ```php
 <?php
@@ -41,7 +42,12 @@ use Backpack\CRUD\app\Http\Controllers\CrudController;
 
 class TagCrudController extends CrudController
 {
+    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\InlineCreateOperation;
+    
+    // notice InlineCreateOperation is used AFTER CreateOperation
+    // that's required in order for InlineCreate to re-use whatever
+    // CreateOperation has already setup
     
     // OPTIONAL
     // only if you want to make the InlineCreateOperation behave differently 
@@ -87,6 +93,7 @@ class TagCrudController extends CrudController
         'modal_class' => 'modal-dialog modal-xl', // use modal-sm, modal-lg to change width
         'modal_route' => route('tag-inline-create'), // InlineCreate::getInlineCreateModal()
         'create_route' =>  route('tag-inline-create-save'), // InlineCreate::storeInlineCreate()
+        'include_main_form_fields' => ['field1', 'field2'], // pass certain fields from the main form to the modal
     ]
 ```
 
@@ -100,4 +107,4 @@ The ```CreateInline``` operation uses two routes:
 - POST to ```/entity-name/inline/create/modal``` -  ```getInlineCreateModal()``` which returns the contents of the Create form, according to how it's been defined by the CreateOperation (in ```setupCreateOperation()```, then overwritten by the InlineCreateOperation (in ```setupInlineCreateOperation()```);
 - POST to ```/entity-name/inline/create``` - points to ```storeInlineCreate()``` which does the actual saving in the database by calling the ```store()``` method from the CreateOperation;
 
-Since this operation is just a way to allow access to the Create operation from a modal, the ```getInlineCreateModal()``` method will show all the fields you've defined for this operation using the [Fields API](/docs/{{version}}/crud-fields#fields-api), then upon Save the ```store()``` method will first check the validation from the FormRequest you've specified, then create the entry using the Eloquent model. Only attributes that specified as fields, and are ```$fillable``` on the model will actually be stored in the database.
+Since this operation is just a way to allow access to the Create operation from a modal, the ```getInlineCreateModal()``` method will show all the fields you've defined for this operation using the [Fields API](/docs/{{version}}/crud-fields#fields-api), then upon Save the ```store()``` method will first check the validation from the FormRequest you've specified, then create the entry using the Eloquent model. Only attributes that are specified as fields, and are ```$fillable``` on the model will actually be stored in the database.

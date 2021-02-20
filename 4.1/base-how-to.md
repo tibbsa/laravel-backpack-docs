@@ -1,4 +1,4 @@
-# How To Customize the UI
+# FAQs for the admin UI
 
 ---
 
@@ -82,7 +82,7 @@ You'll find a few examples below - but you should use which classes you want to 
 <a href="ui-with-dark-sidebar"></a>
 #### Backstrap
 
-Transparent top menu, transparet sidebar, transparent footer. This is the default. This is what _we_ think is best for most users, from our 8+ years of experience building admin panels. Prioritising _content_ over _menus_.
+Transparent top menu, transparent sidebar, transparent footer. This is the default. This is what _we_ think is best for most users, from our 8+ years of experience building admin panels. Prioritising _content_ over _menus_.
 
 ![Backstrap design](https://backpackforlaravel.com/uploads/docs-4-0/ui/examples/default.png)
 
@@ -253,7 +253,7 @@ You can add files to this array, and they'll be loaded in all admin panels pages
 <a name="customize-overlays-css"></a>
 ### Customize the look and feel of the admin panel (using CSS)
 
-If you want to change the look&feel of the admin panel, you can create a custom CSS file wherever you want. We recommend you do it inside ```public/packages/myname/mycustomthemename/css/style.css``` folder so that it's easier to turn into a theme, if you decide later to share or re-use your CSS in other projects.
+If you want to change the look and feel of the admin panel, you can create a custom CSS file wherever you want. We recommend you do it inside ```public/packages/myname/mycustomthemename/css/style.css``` folder so that it's easier to turn into a theme, if you decide later to share or re-use your CSS in other projects.
 
 In ```config/backpack/base.php``` add your file to this config option:
 
@@ -309,6 +309,25 @@ Alternatively, if you need to customize A LOT of strings, you can use:
 php artisan vendor:publish --provider="Backpack\CRUD\BackpackServiceProvider" --tag="lang"
 ```
 which will publish ALL lang files, for ALL languages, inside `resources/lang/vendor/backpack`. But it's highly unlikely you need to modify all of them. In case you do publish all languages, please delete the ones you didn't change. That way, you only keep what's custom in your custom files, and it'll be easier to upgrade those files in the future.
+
+
+<a name="use-the-same-html-and-css-for-front-end"></a>
+### Use the HTML & CSS for the front-end (Backstrap for front-facing website)
+
+If you like how Backpack looks and feels you can use the same interface to power your front-end, simply by making sure your blade view extend Backpack's layout file, instead of a layout file you'd create. Make sure your blade views extend `backpack_view('blank')` or create a layout file similar to our `layouts/top_left.blade.php` that better fits your needs. Then use it across your app:
+
+```php
+@extends(backpack_view('blank'))
+
+<div>Something</div>
+```
+
+It's a good idea to go through our main layout file - [`layouts/top_left.blade.php`](https://github.com/Laravel-Backpack/CRUD/blob/master/src/resources/views/base/layouts/top_left.blade.php) - to understand how it works and how you can use it to your advantage. Most notably, you can:
+- use our `before_styles` and `after_styles` sections to easily _include_ CSS there - `@section('after_styles')`;
+- use our `before_styles` and `after_styles` stacks to easily _push_ CSS there - `@push('after_styles')`;
+- use our `before_scripts` and `after_scripts` sections to easily _include_ JS there - `@section('after_scripts')`;
+- use our `before_scripts` and `after_scripts` stacks to easily _push_ JS there - `@push('after_scripts')`;
+
 
 
 <a name="authentication"></a>
@@ -517,4 +536,5 @@ Add whatever validation rules & inputs you want, in addition to name and passwor
         return backpack_view('auth.register');
     }
 ```
-This will make the registration process pick up a view you can create, in ```resources/views/vendor/backpack/base/auth/register.blade.php```. You can copy-paste the original view, and modify as you please.Including adding your own custom inputs.
+This will make the registration process pick up a view you can create, in ```resources/views/vendor/backpack/base/auth/register.blade.php```. You can copy-paste the original view, and modify as you please. Including adding your own custom inputs.
+

@@ -174,7 +174,9 @@ Show custom HTML based on a closure you specify in your EntityCrudController. Pl
 ### date
 
 
-The date column will show a localized date in the default date format (as specified in the ```config/backpack/base.php``` file), whether the attribute is casted as date in the model or not:
+The date column will show a localized date in the default date format (as specified in the ```config/backpack/base.php``` file), whether the attribute is casted as date in the model or not.
+
+Note that the ```format``` attribute uses ISO date formatting parameters and not PHP ```date()``` formatters.  See <https://carbon.nesbot.com/docs/#iso-format-available-replacements> for more information.
 
 ```php
 [
@@ -189,7 +191,10 @@ The date column will show a localized date in the default date format (as specif
 ### datetime
 
 
-The date column will show a localized datetime in the default datetime format (as specified in the ```config/backpack/base.php``` file), whether the attribute is casted as datetime in the model or not:
+The date column will show a localized datetime in the default datetime format (as specified in the ```config/backpack/base.php``` file), whether the attribute is casted as datetime in the model or not.
+
+Note that the ```format``` attribute uses ISO date formatting parameters and not PHP ```date()``` formatters.  See <https://carbon.nesbot.com/docs/#iso-format-available-replacements> for more information.
+
 
 ```php
 [
@@ -236,11 +241,11 @@ The model_function column will output a function on your main model. Its definit
 For this example, if your model would feature this method, it would return the link to that entity:
 ```php
 public function getSlugWithLink() {
-        return '<a href="'.url($this->slug).'" target="_blank">'.$this->slug.'</a>';
-    }
+    return '<a href="'.url($this->slug).'" target="_blank">'.$this->slug.'</a>';
+}
 ```
 
-**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent that JS and CSS from reaching your DB in the first place.
+**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent JS and CSS from reaching your DB in the first place.
 
 <a name="model_function_attribute"></a>
 ### model_function_attribute
@@ -258,7 +263,7 @@ If the function you're trying to use returns an object, not a string, you can us
 ],
 ```
 
-**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent that JS and CSS from reaching your DB in the first place.
+**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent JS and CSS from reaching your DB in the first place.
 
 <a name="multidimensional_array"></a>
 ### multidimensional_array
@@ -349,7 +354,7 @@ The text column will just output the text value of a db column (or model attribu
 ],
 ```
 
-**Advanced use case:** The ```text``` column type can also show the attribute of a 1-1 relationship. If you have a relationship (like ```parent()```) set up in your Model, you can use relationship and attibute in the ```name```, using dot notation:
+**Advanced use case:** The ```text``` column type can also show the attribute of a 1-1 relationship. If you have a relationship (like ```parent()```) set up in your Model, you can use relationship and attribute in the ```name```, using dot notation:
 ```php
 [
     'name' => 'parent.title',
@@ -375,7 +380,7 @@ The select column will output its connected entity. Its name and definition is t
 ],
 ```
 
-**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent that JS and CSS from reaching your DB in the first place.
+**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent JS and CSS from reaching your DB in the first place.
 
 <a name="select_from_array"></a>
 ### select_from_array
@@ -388,7 +393,7 @@ Show a particular text depending on the value of the attribute.
     'name' => 'status',
     'label' => "Status",
     'type' => 'select_from_array',
-    'options' => [‘draft’ => ‘Draft (invisible)’, ‘published’ => ‘Published (visible)’],
+    'options' => ['draft' => 'Draft (invisible)', 'published' => 'Published (visible)'],
 ],
 ```
 
@@ -409,7 +414,7 @@ The select_multiple column will output a comma separated list of its connected e
 ],
 ```
 
-**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent that JS and CSS from reaching your DB in the first place.
+**Note:** When displaying this column's value, the text is not escaped. That is intentional. This way, you can use it to show labels, color text, italic, bold, links, etc. If you might have malicious JS or CSS in your values, you can create a new escaped field yourself. But it's probably better to treat the problem at the source, and prevent JS and CSS from reaching your DB in the first place.
 
 <a name="table"></a>
 ### table
@@ -616,4 +621,4 @@ You can make the last column be less important (and hide) by giving it an unreas
 $this->crud->setActionsColumnPriority(10000);
 ```
 
->Note that repsonsive tables adopt special behavior if the table is not able to show all columns. This includes displaying a vertical elipsis to the left of the row, and making the row clickable to reveal more detail. This behavior is automatic and is not manually controllable via a field property.
+>Note that responsive tables adopt special behavior if the table is not able to show all columns. This includes displaying a vertical ellipsis to the left of the row, and making the row clickable to reveal more detail. This behavior is automatic and is not manually controllable via a field property.

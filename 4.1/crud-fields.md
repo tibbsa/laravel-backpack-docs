@@ -7,58 +7,11 @@
 
 Field types define how the admin can manipulate an entry's values. They're used by the Create and Update operations.
 
-Think of the field type as the type of input: ```<input type=”text” />```. But for most entities, you won't just need text inputs - you'll need datepickers, upload buttons, 1-n relationship, n-n relationships, textareas, etc.
+Think of the field type as the type of input: ```<input type="text" />```. But for most entities, you won't just need text inputs - you'll need datepickers, upload buttons, 1-n relationship, n-n relationships, textareas, etc.
 
 We have a lot of default field types, detailed below. If you don't find what you're looking for, you can [create a custom field type](/docs/{{version}}/crud-fields#creating-a-custom-field-type). Or if you just want to tweak a default field type a little bit, you can [overwrite default field types](/docs/{{version}}/crud-fields#overwriting-default-field-types).
 
-<a name="mandatory-field-attributes"></a>
-### Mandatory Field Attributes
-
-For each of them, you only need to define it properly in the Controller. All field types will need at least three things: 
-- the ```name``` of the column in the database (ex: "title")
-- the human-readable ```label``` for the input (ex: "Title")
-- the ```type``` of the input (ex: "text")
-
-So at minimum, your field definition array should look like:
-```php
-[
-    'name'  => 'description',
-    'type'  => 'textarea',
-    'label' => 'Article Description',
-]
-```
-
-<a name="optional-field-attributes"></a>
-### Optional Field Attributes
-
-There are a few optional attributes on all default field types, that you can use to easily achieve a few common customizations:
-
-```php
-[
-    'prefix'     => '',
-    'suffix'     => '',
-    'default'    => 'some value', // set a default value
-    'hint'       => 'Some hint text', // helpful text, shows up after the input
-    'attributes' => [
-       'placeholder' => 'Some text when empty',
-       'class'       => 'form-control some-class',
-       'readonly'    => 'readonly',
-       'disabled'    => 'disabled',
-     ], // change the HTML attributes of your input
-     'wrapper'   => [ 
-        'class'      => 'form-group col-md-12'
-     ], // change the HTML attributes for the field wrapper - mostly for resizing fields 
-]
-```
-
-These will help you:
-
-- **prefix** - add a text or icon _before_ the actual input;
-- **suffix** - add a text or icon _after_ the actual input;
-- **default** - specify a default value for the input, on create;
-- **hint** - add descriptive text for this input;
-- **attributes** - change or add actual HTML attributes of the input (ex: readonly, disabled, class, placeholder, etc);
-- **wrapper** - change or add actual HTML attributes to the div that contains the input; 
+> NOTE: Starting with Backpack 4.1, if the _field name_ is the exact same as a relation method in the model, Backpack will assume you're adding a field for that relationship and infer relation attributes from it. To disable this behaviour, you can use `'entity' => false` in your field definition. 
 
 <a name="fields-api"></a>
 ### Fields API
@@ -109,13 +62,75 @@ $this->crud->field('price');
 $this->crud->field('price')->type('number');
 ```
 
-<a name="extra-field-features"></a>
-### Extra Fields Features
+<a name="field-attributes"></a>
+### Field Attributes
+
+<a name="mandatory-field-attributes"></a>
+#### Mandatory Field Attributes
+
+**The only attribute that's mandatory when you define a field is its `name`**, which will be used:
+- inside the inputs, as `<input name='your_db_column' />`;
+- to store the information in the database, so your `name` should correspond to a database column (if the field type doesn't have different instructions); 
+
+Every other field attribute other than `name`, Backpack 4.1+ will try to guess.
+
+<a name="recommended-field-attributes"></a>
+#### Recommended Field Attributes
+
+Normally developers define the following attributes for all fields:
+- the ```name``` of the column in the database (ex: "title")
+- the human-readable ```label``` for the input (ex: "Title")
+- the ```type``` of the input (ex: "text")
+
+So at minimum, your field definition array should look like:
+```php
+[
+    'name'  => 'description',
+    'type'  => 'textarea',
+    'label' => 'Article Description',
+]
+```
+
+Please note that `label` and `type` are not _mandatory_, just _recommended_:
+- `label` can be omitted, and Backpack will try to construct it from the `name`;
+- `type` can be omitted, and Backpack will try to guess it from the column type, or if there's a relationship on the Model with the same `name`;
+
+<a name="optional-field-attributes-for-presentation-purposes"></a>
+#### Optional - Field Attributes for Presentation Purposes
+
+There are a few optional attributes on most default field types, that you can use to easily achieve a few common customizations:
+
+```php
+[
+    'prefix'     => '',
+    'suffix'     => '',
+    'default'    => 'some value', // set a default value
+    'hint'       => 'Some hint text', // helpful text, shows up after the input
+    'attributes' => [
+       'placeholder' => 'Some text when empty',
+       'class'       => 'form-control some-class',
+       'readonly'    => 'readonly',
+       'disabled'    => 'disabled',
+     ], // change the HTML attributes of your input
+     'wrapper'   => [ 
+        'class'      => 'form-group col-md-12'
+     ], // change the HTML attributes for the field wrapper - mostly for resizing fields 
+]
+```
+
+These will help you:
+
+- **prefix** - add a text or icon _before_ the actual input;
+- **suffix** - add a text or icon _after_ the actual input;
+- **default** - specify a default value for the input, on create;
+- **hint** - add descriptive text for this input;
+- **attributes** - change or add actual HTML attributes of the input (ex: readonly, disabled, class, placeholder, etc);
+- **wrapper** - change or add actual HTML attributes to the div that contains the input; 
 
 <a name="fake-fields"></a>
-#### Fake Fields (all stored as JSON in the database)
+#### Optional - Fake Field Attributes (stores fake attributes as JSON in the database)
 
-In case you want to store insignificant information for an entry, that don't need a database column, you can add any number of Fake Fields, and all their information will be store inside one column in the db, as JSON. By default, an ```extras``` column is assumed on the database table, but you can change that.
+In case you want to store insignificant information for an entry that doesn't need a database column, you can add any number of Fake Fields, and all their information will be stored inside one column in the db, as JSON. By default, an ```extras``` column is assumed on the database table, but you can change that.
 
 **Step 1.** Use the fake attribute on your field:
 ```php
@@ -166,7 +181,7 @@ In this example, these 3 fields will show up in the create & update forms, the C
 If the ```store_in``` attribute wasn't used, they would have been stored in the ```extras``` column.
 
 <a name="split-fields-into-tabs"></a>
-#### Split Fields into Tabs
+#### Optional - Tab Attribute Splits Forms into Tabs
 
 You can now split your create/edit inputs into multiple tabs.
 
@@ -189,8 +204,27 @@ $this->crud->addField([
 
 If you forget to specify a tab name for a field, Backpack will place it above all tabs.
 
+
+<a name="entity-model-and-attribute"></a>
+#### Optional - Attributes for Fields Containing Related Entries
+
+When a field works with related entities (relationships like `BelongsTo`, `HasOne`, `HasMany`, `BelongsToMany`, etc), Backpack needs to know how the current model (being create/edited) and the other model (that shows up in the field) are related. And it stores that information in a few additional field attributes, right after you add the field.
+
+*Normally, Backpack 4.1+ will guess all this relationship information for you.* If you have your relationships properly defined in your Models, you can just use a relationship field the same way you would a normal field. Pretend that _the method in your Model that defines your relationship_ is a real column, and Backpack will do all the work for you.
+
+But if you want to overwrite any of the relationship attributes Backpack guesses, here they are:
+- `entity` - points to the method on the model that contains the relationship; having this defined, Backpack will try to guess from it all other field attributes; ex: `category` or `tags`;
+- `model` - the classname (including namespace) of the related model (ex: `App\Models\Category`); usually deducted from the relationship function in the model;
+- `attribute` - the attribute on the related model (aka foreign attribute) that will be show to the user; for example, you wouldn't want a dropdown of categories showing IDs - no, you'd want to show the category names; in this case, the `attribute` will be `name`; usually deducted using the [identifiable attribute functionality explained below](#identifiable-attribute);
+- `multiple` - boolean, allows the user to pick one or multiple items; usually deducted depending on whether it's a 1-to-n or n-n relationship;
+- `pivot` - boolean, instructs Backpack to store the information inside a pivot table; usually deducted depending on whether it's a 1-to-n or n-n relationship;
+- `relation_type` - text, deducted from `entity`; not a good idea to overwrite;
+
+If you do need a field that contains relationships to behave a certain way, it's usually enough to just specify a different `entity`. However, you _can_ specify any of the attributes above, and Backpack will take your value for it, instead of trying to guess one.
+
+
 <a name="identifiable-attribute"></a>
-#### Identifiable Attribute for Relationship Fields
+** Identifiable Attribute for Relationship Fields**
 
 Fields that work with relationships will allow you to select which ```attribute``` on the related entry you want to show to the user. All relationship fields (relationship, select, select2, select_multiple, select2_multiple, select2_from_ajax, select2_from_ajax_multiple) let you define the ```attribute``` for this specific purpose.
 
@@ -201,13 +235,34 @@ In Backpack, you can explicitly define this, by giving the field an ```attribute
 - (B) you can specify the identifiable attribute in your model, and all fields will pick this up:
 
 ```php
-// you can define
-protected $identifiableAttribute = 'title';
 
-// or for more complicated use cases you can do
-public function identifiableAttribute() {
-    // process stuff here
-    return 'whatever_you_want_even_an_accessor';
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
+
+class Category
+{
+    use CrudTrait;
+
+    // you can define this
+
+    /**
+     * Attribute shown on the element to identify this model.
+     *
+     * @var string
+     */
+    protected $identifiableAttribute = 'title';
+
+    // or for more complicated use cases you can do
+    
+    /**
+     * Get the attribute shown on the element to identify this model.
+     *
+     * @return string
+     */
+    public function identifiableAttribute()
+    {
+        // process stuff here
+        return 'whatever_you_want_even_an_accessor';
+    }
 }
 ```
 
@@ -218,10 +273,10 @@ public function identifiableAttribute() {
 <a name="address_algolia"></a>
 ### address_algolia
 
-Use [Algolia Places autocomplete](https://community.algolia.com/places/) to help users type their address faster. With the ```store_as_json``` option, it will store the address, postcode, city, country, latitude and longitude in a JSON in the database. Without it, it will just store the address string.
+Use [Algolia Places autocomplete](https://community.algolia.com/places/) to help users type their address faster. With the ```store_as_json``` option, it will store the address, postcode, city, country, latitude and longitude in a JSON in the database. Without it, it will just store the address string. For information stored as JSON in the database, it's recommended that you use [attribute casting](https://mattstauffer.co/blog/laravel-5.0-eloquent-attribute-casting) to ```array``` or ```object```. That way, every time you get the info from the database you'd get it in a usable format.
 
 ```php
-[   // Address
+[   // Address algolia
     'name'          => 'address',
     'label'         => 'Address',
     'type'          => 'address_algolia',
@@ -230,7 +285,7 @@ Use [Algolia Places autocomplete](https://community.algolia.com/places/) to help
 ],
 ```
 
-> **Use attribute casting.** For information stored as JSON in the database, it's recommended that you use [attribute casting](https://mattstauffer.co/blog/laravel-5.0-eloquent-attribute-casting) to ```array``` or ```object```. That way, every time you get the info from the database you'd get it in a usable format.
+> **Algolia is killing Places.** Please note that Algolia Places **will stop working in May 2022**, as reported in [this announcement](https://www.algolia.com/blog/product/sunseting-our-places-feature/). For that reason, it's probably a good idea to use the `address_google` field instead (it's right after this one).
 
 
 Input preview: 
@@ -245,7 +300,7 @@ Input preview:
 Use [Google Places Search](https://developers.google.com/places/web-service/search) to help users type their address faster. With the ```store_as_json``` option, it will store the address, postcode, city, country, latitude and longitude in a JSON in the database. Without it, it will just store the complete address string.
 
 ```php
-[   // Address
+[   // Address google
     'name'          => 'address',
     'label'         => 'Address',
     'type'          => 'address_google',
@@ -257,9 +312,9 @@ Use [Google Places Search](https://developers.google.com/places/web-service/sear
 Using Google Places API is dependent on using an API Key. Please [get an API key](https://console.cloud.google.com/apis/credentials) - you do have to configure billing, but you qualify for $200/mo free usage, which covers most use cases. Then copy-paste that key as your ```services.google_places.key``` value. So inside your ```config/services.php``` please add the items below:
 
 ```php
-    'google_places' => [
-        'key' => 'the-key-you-got-from-google-places'
-    ],
+'google_places' => [
+    'key' => 'the-key-you-got-from-google-places'
+],
 ```
 
 > **Use attribute casting.** For information stored as JSON in the database, it's recommended that you use [attribute casting](https://mattstauffer.co/blog/laravel-5.0-eloquent-attribute-casting) to ```array``` or ```object```. That way, every time you get the info from the database you'd get it in a usable format. Also, it is heavily recommended that your database column can hold a large JSON - so use `text` rather than `string` in your migration (in MySQL this translates to `text` instead of `varchar`).
@@ -297,7 +352,7 @@ Onclick preview:
 <a name="browse-multiple"></a>
 ### browse_multiple
 
-Open elFinder and select multiple file from there. Run ```composer require backpack/filemanager``` to install elFinder, then you can use the field:
+Open elFinder and select multiple files from there. Run ```composer require backpack/filemanager``` to install elFinder, then you can use the field:
 
 ```php
 [   // Browse multiple
@@ -311,6 +366,7 @@ Open elFinder and select multiple file from there. Run ```composer require backp
 ```
 
 The field assumes you've cast your attribute as ```array``` on your model.  That way, when you do ```$entry->files``` you get a nice array.
+**NOTE:** If you use `multiple => false` you should NOT cast your attribute as ```array```
 
 Input preview: 
 
@@ -366,8 +422,10 @@ Input preview:
 <a name="checklist"></a>
 ### checklist
 
+Show a list of checkboxes, for the user to check one or more of them.
+
 ```php
-[
+[   // Checklist
     'label'     => 'Roles',
     'type'      => 'checklist',
     'name'      => 'roles',
@@ -377,6 +435,8 @@ Input preview:
     'pivot'     => true,
 ],
 ```
+
+**Note: If you don't use a pivot table (pivot = false), you need to cast your db column as `array` in your model,by adding your column to your model's `$casts`. **
 
 Input preview: 
 
@@ -388,13 +448,12 @@ Input preview:
 ### checklist_dependency
 
 ```php
-
-// two interconnected entities
-'label'             => 'User Role Permissions',
-'field_unique_name' => 'user_role_permission',
-'type'              => 'checklist_dependency',
-'name'              => ['roles', 'permissions'], // the methods that define the relationship in your Models
-'subfields'         => [
+[   // two interconnected entities
+    'label'             => 'User Role Permissions',
+    'field_unique_name' => 'user_role_permission',
+    'type'              => 'checklist_dependency',
+    'name'              => ['roles', 'permissions'], // the methods that define the relationship in your Models
+    'subfields'         => [
         'primary' => [
             'label'            => 'Roles',
             'name'             => 'roles', // the method that defines the relationship in your Model
@@ -437,7 +496,7 @@ Show a wysiwyg CKEditor to the user.
     'type'          => 'ckeditor',
 
     // optional:
-    'extra_plugins' => ['oembed', 'widget']
+    'extra_plugins' => ['oembed', 'widget'],
     'options'       => [
         'autoGrow_minHeight'   => 200,
         'autoGrow_bottomSpace' => 50,
@@ -485,8 +544,30 @@ Show a pretty colour picker using [Bootstrap Colorpicker](https://itsjavi.com/bo
     'default'              => '#000000',
 
     // optional
-    'color_picker_options' => ['customClass' => 'custom-class']
-]
+    // Anything your define inside `color_picker_options` will be passed as JS
+    // to the JavaScript plugin. For more information about the options available
+    // please see the plugin docs at:
+    //  ### https://itsjavi.com/bootstrap-colorpicker/module-options.html
+    'color_picker_options' => [
+        'customClass' => 'custom-class',
+        'horizontal' => true,
+        'extensions' => [
+            [
+                'name' => 'swatches', // extension name to load
+                'options' => [ // extension options
+                    'colors' => [
+                        'primary' => '#337ab7',
+                        'success' => '#5cb85c',
+                        'info' => '#5bc0de',
+                        'warning' => '#f0ad4e',
+                        'danger' => '#d9534f'
+                    ],
+                    'namesAsValues' => false
+                ]
+            ]
+        ]
+    ]
+],
 ```
 
 Input preview: 
@@ -602,7 +683,7 @@ Input preview:
 **Please note:** if you're using datetime [attribute casting](https://laravel.com/docs/5.3/eloquent-mutators#attribute-casting) on your model, you also need to place this mutator inside your model:
 ```php
 	public function setDatetimeAttribute($value) {
-		$this->attributes['datetime'] = \Date::parse($value);
+		$this->attributes['datetime'] = \Carbon\Carbon::parse($value);
 	}
 ```
 Otherwise the input's datetime-local format will cause some errors.
@@ -637,7 +718,7 @@ Show a [Bootstrap Datetime Picker](https://eonasdan.github.io/bootstrap-datetime
 **Please note:** if you're using date [attribute casting](https://laravel.com/docs/5.3/eloquent-mutators#attribute-casting) on your model, you may also need to place this mutator inside your model:
 ```php
 	public function setDatetimeAttribute($value) {
-		$this->attributes['datetime'] = \Date::parse($value);
+		$this->attributes['datetime'] = \Carbon\Carbon::parse($value);
 	}
 ```
 Otherwise the input's datetime-local format will cause some errors. Remember to change "datetime" with the name of your attribute (column name).
@@ -762,18 +843,19 @@ Upload an image and store it on the disk.
 ```php
 // image
 $this->crud->addField([
-    'label'        => "Profile Image",
-    'name'         => "image",
-    'type'         => 'image',
-    'upload'       => true,
-    'crop'         => true, // set to true to allow cropping, false to disable
-    'aspect_ratio' => 1, // ommit or set to 0 to allow any aspect ratio
+    'label' => "Profile Image",
+    'name' => "image",
+    'type' => 'image',
+    'crop' => true, // set to true to allow cropping, false to disable
+    'aspect_ratio' => 1, // omit or set to 0 to allow any aspect ratio
     // 'disk'      => 's3_bucket', // in case you need to show images from a different disk
     // 'prefix'    => 'uploads/images/profile_pictures/' // in case your db value is only the file name (no path), you can use this to prepend your path to the image src (in HTML), before it's shown to the user;
 ]);
 ```
 
-**Step 2.** Add a [mutator](https://laravel.com/docs/7.x/eloquent-mutators#defining-a-mutator) to your Model, where you pick up the uploaded file and store it wherever you want. You can use this boilerplate code and modify it to match your use case. The code below requires that you have ```intervention/image``` installed. If you don't, please do ```composer require intervention/image``` first.
+**Step 2.** Add a [mutator](https://laravel.com/docs/7.x/eloquent-mutators#defining-a-mutator) to your Model, where you pick up the uploaded file and store it wherever you want. You can use this boilerplate code and modify it to match your use case. 
+
+**NOTE: The code below requires that you have ```intervention/image``` installed. If you don't, please do ```composer require intervention/image``` first.**
 
 ```php
 // ..
@@ -908,7 +990,7 @@ Select an existing page from PageManager or an internal or external link. It's u
     'label'      => "Type",
     'type'       => 'page_or_link',
     'page_model' => '\Backpack\PageManager\app\Models\Page'
-]
+],
 ```
 
 Input preview: 
@@ -950,14 +1032,20 @@ public function setPasswordAttribute($value) {
     
     public function store()
     {
-        $this->crud->request = $this->crud->validateRequest();
+        $this->crud->setRequest($this->crud->validateRequest());
     
+        /** @var \Illuminate\Http\Request $request */
+        $request = $this->crud->getRequest();
+
         // Encrypt password if specified.
         if ($request->input('password')) {
             $request->request->set('password', Hash::make($request->input('password')));
         } else {
             $request->request->remove('password');
         }
+
+        $this->crud->setRequest($request);
+        $this->crud->unsetValidation(); // Validation has already been run
 
         return $this->traitStore();
     }
@@ -983,7 +1071,7 @@ Show radios according to an associative array you give the input and let the use
     ],
     // optional
     //'inline'      => false, // show the radios all on the same line?
-]
+],
 ```
 
 Input preview: 
@@ -1019,7 +1107,7 @@ Input preview:
 <a name="relationship"></a>
 ### relationship
 
-Allows the user to choose one/more entries of an Eloquent Model that has a relationship with the current model, using a ```select2``` input. In order to work, this field needs the relationships to be properly defined on the Eloquent models (```hasOne```, ```hasMany```, ```belongsToOne```, ```belongsToMany``` etc).
+Allows the user to choose one/more entries of an Eloquent Model that has a relationship with the current model, using a ```select2``` input. In order to work, this field needs the relationships to be properly defined on the Eloquent models (```hasOne```, ```belongsTo```, ```belongsToMany``` etc).
 
 Input preview (for both 1-n and n-n relationships): 
 
@@ -1030,7 +1118,7 @@ Take a look at the examples below to understand the correct syntax for your use 
 
 **Example 1. Few options (0-100). Entries are loaded onpage, using a simple Eloquent query. No AJAX.**
 ```php
-[
+[   // relationship
     'type' => "relationship",
     'name' => 'category', // the method on your model that defines the relationship
 
@@ -1040,15 +1128,17 @@ Take a look at the examples below to understand the correct syntax for your use 
     // 'entity' => 'category', // the method that defines the relationship in your Model
     // 'model' => "App\Models\Category", // foreign key Eloquent model
     // 'placeholder' => "Select a category", // placeholder for the select2 input
- ]
+ ],
 ```
+
+For more information about the optional attributes that fields use when they interact with related entries - [look here](#optional-entity-model-and-attribute-for-fields-containing-relate).
 
 **Example 2. Many options. Entries are loaded using AJAX.**
 
 If your related entry can have hundreds, thousands or millions of entries, it's not practical to load the options using an Eloquent query onpage, because the Create/Update page would be very slow to load. In this case, you should instruct ```select2``` to fetch the entries using AJAX calls. To do that, in your ```relationship``` field definition you should add ```'ajax' => true```:
 
 ```php
-[
+[   // relationship
     'type' => "relationship",
     'name' => 'category', // the method on your model that defines the relationship
     'ajax' => true,
@@ -1063,9 +1153,9 @@ If your related entry can have hundreds, thousands or millions of entries, it's 
     // AJAX OPTIONALS:
     // 'data_source' => url("fetch/category"), // url to controller search function (with /{id} should return model)
     // 'minimum_input_length' => 2, // minimum characters to type before querying results
-    // 'dependencies'         => [‘category’], // when a dependency changes, this select2 is reset to null
+    // 'dependencies'         => ['category'], // when a dependency changes, this select2 is reset to null
     // 'include_all_form_fields'  => false, // optional - only send the current field through AJAX (for a smaller payload if you're not using multiple chained select2s)
- ]
+ ],
 ```
 
 Then, you need to create the route and method that allows ```select2``` to search and fetch the results of that search. Fortunately, the ```FetchOperation``` allows you to easily do just that. Inside the CrudController where you've defined the ```relationship``` field, use the ```FetchOperation``` trait, and define a new method that will respond to AJAX queries:
@@ -1075,7 +1165,7 @@ Then, you need to create the route and method that allows ```select2``` to searc
 
     public function fetchCategory()
     {
-        return $this->fetch(App\Models\Category::class);
+        return $this->fetch(\App\Models\Category::class);
     }
 ```
 
@@ -1088,20 +1178,20 @@ Searching with AJAX provides a great UX. But what if the user doesn't find what 
 ```php
 // Inside ArticleCrudController
 // for 1-n relationships (ex: category)
-[
+[   // relationship
     'type'          => "relationship",
     'name'          => 'category', // the method on your model that defines the relationship
     'ajax'          => true,
     'inline_create' => true,
-]
+],
 // Inside ArticleCrudController
 // for n-n relationships (ex: tags)
-[
+[   // relationship
     'type'          => "relationship",
     'name'          => 'tags', // the method on your model that defines the relationship
     'ajax'          => true,
     'inline_create' => [ 'entity' => 'tag' ] // you need to specify the entity in singular
- ]
+],
 ```
 
 Now, on the CrudController of that secondary entity the user will be able to create on-the-fly (ex: ```CategoryCrudController``` or ```TagCrudController```, you'll need to enable the InlineCreate operation:
@@ -1123,7 +1213,7 @@ Remember, ```FetchOperation``` is still needed on the main crud (ex: ```ArticleC
 <a name="repeatable"></a>
 ### repeatable
 
-Shows a group of inputs to the user, and allows the user to add ore remove groups of that kind:
+Shows a group of inputs to the user, and allows the user to add or remove groups of that kind:
 
 ![CRUD Field - repeatable](https://backpackforlaravel.com/uploads/docs-4-1/fields/repeatable.png)
 
@@ -1133,6 +1223,7 @@ You can use most field types inside the field groups, add as many fields you nee
 - **all fields defined inside a field group need to have their definition valid and complete**; you can't use shorthands, you shouldn't assume fields will guess attributes for you;
 - some field types do not make sense to be included inside a field group (for example, relationship fields might not make sense; they will work if the relationship is defined on the main model, but upon save the selected entries will NOT be saved as usual, they will be saved as JSON; you can intercept the saving if you want and do whatever you want); 
 - a few fields _make sense_, but _cannot_ work inside a repeatable group (ex: upload, upload_multiple); [see the notes inside the PR](https://github.com/Laravel-Backpack/CRUD/pull/2266#issuecomment-559436214) for more details, and a complete list of the fields; the few fields that do not work inside repeatable have sensible alternatives;
+- you _can_ add validation to subfields, but naturally it'll be a little different; for a quick example of how to add validation to your repeatable fields, check out our Demo, particularly [`DummyRequest.php`](https://github.com/Laravel-Backpack/demo/blob/master/app/Http/Requests/DummyRequest.php#L31-L61);
 
 
 ```php
@@ -1165,6 +1256,13 @@ You can use most field types inside the field groups, add as many fields you nee
             'label' => 'Quote',
         ],
     ],
+    
+    // optional
+    'new_item_label'  => 'Add Group', // customize the text of the button
+    'init_rows' => 2 // number of empty rows to be initialized, by default 1
+    'min_rows' => 2 // minimum rows allowed, when reached the "delete" buttons will be hidden
+    'max_rows' => 2 // maximum rows allowed, when reached the "new item" button will be hidden
+    
 ],
 ```
 
@@ -1182,17 +1280,24 @@ Your relationships should already be defined on your models as hasOne() or belon
    'label'     => "Category",
    'type'      => 'select',
    'name'      => 'category_id', // the db column for the foreign key
-   'entity'    => 'category', // the method that defines the relationship in your Model
+
+   // optional 
+   // 'entity' should point to the method that defines the relationship in your Model
+   // defining entity will make Backpack guess 'model' and 'attribute'
+   'entity'    => 'category', 
+
+   // optional - manually specify the related model and attribute
+   'model'     => "App\Models\Category", // related model
    'attribute' => 'name', // foreign key attribute that is shown to user
 
-
-   // optional
-   'model'     => "App\Models\Category",
+   // optional - force the related options to be a custom query, instead of all();
    'options'   => (function ($query) {
         return $query->orderBy('name', 'ASC')->where('depth', 1)->get();
-    }), // force the related options to be a custom query, instead of all(); you can use this to filter the results show in the select
-]
+    }), //  you can use this to filter the results show in the select
+],
 ```
+
+For more information about the optional attributes that fields use when they interact with related entries - [look here](#optional-entity-model-and-attribute-for-fields-containing-relate).
 
 Input preview: 
 
@@ -1220,6 +1325,8 @@ Display a select where the options are grouped by a second entity (like Categori
 ],
 ```
 
+For more information about the optional attributes that fields use when they interact with related entries - [look here](#optional-entity-model-and-attribute-for-fields-containing-relate).
+
 Input preview:
 
 ![CRUD Field - select_grouped](https://backpackforlaravel.com/uploads/docs-4-1/fields/select_grouped.png)
@@ -1237,17 +1344,21 @@ Your relationships should already be defined on your models as hasOne() or belon
    'label'     => "Category",
    'type'      => 'select2',
    'name'      => 'category_id', // the db column for the foreign key
-   'entity'    => 'category', // the method that defines the relationship in your Model
-   'attribute' => 'name', // foreign key attribute that is shown to user
 
    // optional
+   'entity'    => 'category', // the method that defines the relationship in your Model
    'model'     => "App\Models\Category", // foreign key model
+   'attribute' => 'name', // foreign key attribute that is shown to user
    'default'   => 2, // set the default value of the select2
+
+    // also optional
    'options'   => (function ($query) {
         return $query->orderBy('name', 'ASC')->where('depth', 1)->get();
     }), // force the related options to be a custom query, instead of all(); you can use this to filter the results show in the select
-]
+],
 ```
+
+For more information about the optional attributes that fields use when they interact with related entries - [look here](#optional-entity-model-and-attribute-for-fields-containing-relate).
 
 Input preview: 
 
@@ -1259,24 +1370,28 @@ Input preview:
 ### select_multiple (n-n relationship)
 
 Show a Select with the names of the connected entity and let the user select any number of them.
-Your relationships should already be defined on your models as hasMany() or belongsToMany().
+Your relationship should already be defined on your models as belongsToMany().
 
 ```php
 [   // SelectMultiple = n-n relationship (with pivot table)
     'label'     => "Tags",
     'type'      => 'select_multiple',
     'name'      => 'tags', // the method that defines the relationship in your Model
+
+    // optional
     'entity'    => 'tags', // the method that defines the relationship in your Model
+    'model'     => "App\Models\Tag", // foreign key model
     'attribute' => 'name', // foreign key attribute that is shown to user
     'pivot'     => true, // on create&update, do you need to add/delete pivot table entries?
 
-    // optional
-    'model'     => "App\Models\Tag", // foreign key model
+    // also optional
     'options'   => (function ($query) {
         return $query->orderBy('name', 'ASC')->where('depth', 1)->get();
     }), // force the related options to be a custom query, instead of all(); you can use this to filter the results show in the select
-]
+],
 ```
+
+For more information about the optional attributes that fields use when they interact with related entries - [look here](#optional-entity-model-and-attribute-for-fields-containing-relate).
 
 Input preview: 
 
@@ -1290,27 +1405,30 @@ Input preview:
 
 [Works just like the SELECT field, but prettier]
 
-Show a Select2 with the names of the connected entity and let the user select any number of them.
-Your relationships should already be defined on your models as hasMany() or belongsToMany().
+Shows a Select2 with the names of the connected entity and let the user select any number of them.
+Your relationship should already be defined on your models as belongsToMany().
 
 ```php
 [    // Select2Multiple = n-n relationship (with pivot table)
      'label'     => "Tags",
      'type'      => 'select2_multiple',
      'name'      => 'tags', // the method that defines the relationship in your Model
-     'entity'    => 'tags', // the method that defines the relationship in your Model
-     'attribute' => 'name', // foreign key attribute that is shown to user
 
+     // optional
+     'entity'    => 'tags', // the method that defines the relationship in your Model
+     'model'     => "App\Models\Tag", // foreign key model
+     'attribute' => 'name', // foreign key attribute that is shown to user
      'pivot'     => true, // on create&update, do you need to add/delete pivot table entries?
      // 'select_all' => true, // show Select All and Clear buttons?
 
      // optional
-     'model'     => "App\Models\Tag", // foreign key model
      'options'   => (function ($query) {
          return $query->orderBy('name', 'ASC')->where('depth', 1)->get();
      }), // force the related options to be a custom query, instead of all(); you can use this to filter the results show in the select
-]
+],
 ```
+
+For more information about the optional attributes that fields use when they interact with related entries - [look here](#optional-entity-model-and-attribute-for-fields-containing-relate).
 
 Input preview: 
 
@@ -1338,6 +1456,8 @@ Display a select2 with the values ordered hierarchically and indented, for an en
 ],
 ```
 
+For more information about the optional attributes that fields use when they interact with related entries - [look here](#optional-entity-model-and-attribute-for-fields-containing-relate).
+
 Input preview:
 
 ![CRUD Field - select2_nested](https://backpackforlaravel.com/uploads/docs-4-1/fields/select2_nested.png)
@@ -1362,6 +1482,8 @@ Display a select2 where the options are grouped by a second entity (like Categor
 ],
 ```
 
+For more information about the optional attributes that fields use when they interact with related entries - [look here](#optional-entity-model-and-attribute-for-fields-containing-relate).
+
 Input preview:
 
 ![CRUD Field - select2_grouped](https://backpackforlaravel.com/uploads/docs-4-1/fields/select2_grouped.png)
@@ -1372,7 +1494,7 @@ Input preview:
 <a name="select_and_order"></a>
 ### select_and_order
 
-Display items on two columns and let the user drag&drop between them to choose which items are selected an which are not, and reorder the selected items with drag&drop.
+Display items on two columns and let the user drag&drop between them to choose which items are selected and which are not, and reorder the selected items with drag&drop.
 
 Its definition is exactly as ```select_from_array```, but the value will be stored as JSON in the database: ```["3","5","7","6"]```, so it needs the attribute to be cast to array on the Model:
 
@@ -1404,7 +1526,7 @@ Also possible:
     'label'   => 'Featured',
     'type'    => 'select_and_order',
     'options' => Product::get()->pluck('title','id')->toArray(),
-]
+],
 ```
 
 Input preview: 
@@ -1466,8 +1588,7 @@ Input preview:
 Display a select2 that takes its values from an AJAX call.
 
 ```php
-[
-    // 1-n relationship
+[   // 1-n relationship
     'label'       => "End", // Table column heading
     'type'        => "select2_from_ajax",
     'name'        => 'category_id', // the column that contains the ID of that connected entity
@@ -1482,8 +1603,10 @@ Display a select2 that takes its values from an AJAX call.
     // 'dependencies'            => ['category'], // when a dependency changes, this select2 is reset to null
     // 'method'                  => 'GET', // optional - HTTP method to use for the AJAX call (GET, POST)
     // 'include_all_form_fields' => false, // optional - only send the current field through AJAX (for a smaller payload if you're not using multiple chained select2s)
- ]
+],
 ```
+
+For more information about the optional attributes that fields use when they interact with related entries - [look here](#optional-entity-model-and-attribute-for-fields-containing-relate).
 
 Of course, you also need to create a controller and routes for the data_source above. Here's an example:
 
@@ -1540,14 +1663,13 @@ Input preview:
 Display a select2 that takes its values from an AJAX call. Same as [select2_from_ajax](#section-select2_from_ajax) above, but allows for multiple items to be selected. The only difference in the field definition is the "pivot" attribute.
 
 ```php
-[
-    // n-n relationship
+[   // n-n relationship
     'label'       => "Cities", // Table column heading
     'type'        => "select2_from_ajax_multiple",
     'name'        => 'cities', // a unique identifier (usually the method that defines the relationship in your Model) 
     'entity'      => 'cities', // the method that defines the relationship in your Model
     'attribute'   => "name", // foreign key attribute that is shown to user
-    'data_source' => url("api/cities"), // url to controller search function (with /{id} should return model)
+    'data_source' => url("api/city"), // url to controller search function (with /{id} should return model)
     'pivot'       => true, // on create&update, do you need to add/delete pivot table entries?
     
     // OPTIONAL
@@ -1555,14 +1677,16 @@ Display a select2 that takes its values from an AJAX call. Same as [select2_from
     'placeholder'          => "Select a city", // placeholder for the select
     'minimum_input_length' => 2, // minimum characters to type before querying results
     // 'include_all_form_fields'  => false, // optional - only send the current field through AJAX (for a smaller payload if you're not using multiple chained select2s)
- ]
+],
 ```
+
+For more information about the optional attributes that fields use when they interact with related entries - [look here](#optional-entity-model-and-attribute-for-fields-containing-relate).
 
 Of course, you also need to create a controller and routes for the data_source above. Here's an example:
 
 ```php
-Route::get('/api/category', 'Api\CityController@index');
-Route::get('/api/category/{id}', 'Api\CityController@show');
+Route::get('/api/city', 'Api\CityController@index');
+Route::get('/api/city/{id}', 'Api\CityController@show');
 ```
 
 ```php
@@ -1654,8 +1778,22 @@ Show a [Summernote wysiwyg editor](http://summernote.org/) to the user.
     'name'  => 'description',
     'label' => 'Description',
     'type'  => 'summernote',
-    // 'options' => [], // easily pass parameters to the summernote JS initialization 
+    'options' => []
 ],
+
+// the summernote field works with the default configuration options but allow developer to configure to his needs
+// optional configuration check https://summernote.org/deep-dive/ for a list of available configs
+[   
+    'name'  => 'description',
+    'label' => 'Description',
+    'type'  => 'summernote',
+    'options' => [ 
+        'toolbar' => [
+            ['font', ['bold', 'underline', 'italic']]
+        ]
+    ],
+],
+
 ```
 
 Input preview: 
@@ -1711,12 +1849,14 @@ The basic field type, all it needs is the two mandatory parameters: name and lab
     //'hint'       => 'Some hint text', // helpful text, show up after input
     //'attributes' => [
        //'placeholder' => 'Some text when empty',
-       //'class' => 'form-control some-class'
+       //'class' => 'form-control some-class',
+       //'readonly'  => 'readonly',
+       //'disabled'  => 'disabled',
      //], // extra HTML attributes and values your input might need
      //'wrapper'   => [
        //'class' => 'form-group col-md-12'
      //], // extra HTML attributes for the field wrapper - mostly for resizing fields 
-     //'readonly'  => 'readonly',
+    
 ],
 ```
 
@@ -1791,9 +1931,9 @@ Input preview:
     'label'     => 'Image',
     'type'      => 'upload',
     'upload'    => true,
-    'disk'      => 'uploads', // if you store files in the /public folder, please ommit this; if you store them in /storage or S3, please specify it;
+    'disk'      => 'uploads', // if you store files in the /public folder, please omit this; if you store them in /storage or S3, please specify it;
     // optional:
-    'temporary' => 10 // if using a service, such as S3, that requires you to make temporary URL's this will make a URL that is valid for the number of minutes specified
+    'temporary' => 10 // if using a service, such as S3, that requires you to make temporary URLs this will make a URL that is valid for the number of minutes specified
 ],
 ```
 
@@ -1817,7 +1957,7 @@ The field sends the file, through a Request, to the Controller. The Controller t
 
 >NOTE: If this field is mandatory (required in validation) please use the [sometimes laravel validation rule](https://laravel.com/docs/5.8/validation#conditionally-adding-rules) together with **required** in your validation. (sometimes|required|file etc... )
 
-[The ```uploadFileToDisk()``` method](https://github.com/Laravel-Backpack/CRUD/blob/master/src/CrudTrait.php#L108-L129) will take care of everything for most use cases:
+[The ```uploadFileToDisk()``` method](https://github.com/Laravel-Backpack/CRUD/blob/master/src/app/Models/Traits/HasUploadFields.php#L31-L59) will take care of everything for most use cases:
 
 ```php
 /**
@@ -1868,9 +2008,9 @@ Shows a multiple file input to the user and stores the values as a JSON array in
     'label'     => 'Photos',
     'type'      => 'upload_multiple',
     'upload'    => true,
-    'disk'      => 'uploads', // if you store files in the /public folder, please ommit this; if you store them in /storage or S3, please specify it;
+    'disk'      => 'uploads', // if you store files in the /public folder, please omit this; if you store them in /storage or S3, please specify it;
     // optional:
-    'temporary' => 10 // if using a service, such as S3, that requires you to make temporary URL's this will make a URL that is valid for the number of minutes specified
+    'temporary' => 10 // if using a service, such as S3, that requires you to make temporary URLs this will make a URL that is valid for the number of minutes specified
 ],
 ```
 
@@ -1897,7 +2037,7 @@ public function setPhotosAttribute($value)
 
 The field sends the files, through a Request, to the Controller. The Controller then tries to create/update the Model. That's when the mutator on your model will run. That also means we can do any [file validation](https://laravel.com/docs/5.3/validation#rule-file) (```file```, ```image```, ```mimetypes```, ```mimes```) in the Request, before the files are stored on the disk.
 
-[The ```uploadMultipleFilesToDisk()``` method](https://github.com/Laravel-Backpack/CRUD/blob/master/src/CrudTrait.php#L154-L189) will take care of everything for most use cases:
+[The ```uploadMultipleFilesToDisk()``` method](https://github.com/Laravel-Backpack/CRUD/blob/master/src/app/Models/Traits/HasUploadFields.php#L76-L113) will take care of everything for most use cases:
 
 ```
 /**
@@ -1979,7 +2119,7 @@ $video = {
 
 So you should use [attribute casting](https://mattstauffer.co/blog/laravel-5.0-eloquent-attribute-casting) in your model, to cast the video as ```array``` or ```object```.
 
-Vimeo does not require an API key in order to query their DB, but YouTube does, even though their free quota is generous. You can get a free YouTube API Key inside [Google Developers Console](https://console.developers.google.com/) ([video tutorial here](https://www.youtube.com/watch?v=pP4zvduVAqo)). 
+Vimeo does not require an API key in order to query their DB, but YouTube does, even though their free quota is generous. You can get a free YouTube API Key inside [Google Developers Console](https://console.developers.google.com/) ([video tutorial here](https://www.youtube.com/watch?v=pP4zvduVAqo)). Please DO NOT use our API Key - create your own. The key above is there just for your convenience, to easily try out the field. As soon as you decide to use this field type, create an API Key and use _your_ API Key. Our key hits its ceiling every month, so if you use our key most of the time it won't work.
 
 
 <hr>
@@ -2038,7 +2178,7 @@ The actual field types are stored in the Backpack/CRUD package in ```/resources/
 
 To quickly publish a field blade file in your project, you can use ```php artisan backpack:publish crud/fields/field_name```. For example, to publish the number field type, you'd type ```php artisan backpack:publish crud/fields/number```
 
->Please keep in mind that if you're using _your_ file for a field type, you're not using the _package file_. So any updates we push to that file, you're not getting them. In most cases, it's recommended you crate a custom field type for your use case, instead of overwriting default field types.
+>Please keep in mind that if you're using _your_ file for a field type, you're not using the _package file_. So any updates we push to that file, you're not getting them. In most cases, it's recommended you create a custom field type for your use case, instead of overwriting default field types.
 
 <a name="creating-a-custom-field-type"></a>
 ## Creating a Custom Field Type
@@ -2053,7 +2193,7 @@ Your field definition will be something like:
     'label' => 'Home address',
     'type'  => 'address'
     /// 'view_namespace' => 'yourpackage' // use a custom namespace of your package to load views within a custom view folder.
-]);
+],
 ```
 
 And your blade file something like:
@@ -2065,7 +2205,7 @@ And your blade file something like:
         type="text"
         name="{{ $field['name'] }}"
         value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
-        @include('crud::inc.field_attributes')
+        @include('crud::fields.inc.attributes')
     >
 
     {{-- HINT --}}

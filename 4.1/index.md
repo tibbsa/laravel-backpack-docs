@@ -5,6 +5,7 @@
 - [Installation](/docs/{{version}}/installation)
 - [Release Notes](/docs/{{version}}/release-notes)
 - [Upgrade Guide](/docs/{{version}}/upgrade-guide)
+- [FAQ](/docs/{{version}}/faq)
 
 #### Getting Started
 - [Video Course](/docs/{{version}}/getting-started-videos)
@@ -20,7 +21,7 @@
 - [Alerts](/docs/{{version}}/base-alerts)
 - [Breadcrumbs](/docs/{{version}}/base-breadcrumbs)
 - [Widgets](/docs/{{version}}/base-widgets)
-- [How To](/docs/{{version}}/base-how-to)
+- [FAQ](/docs/{{version}}/base-how-to)
 
 #### CRUD Panels
 
@@ -47,12 +48,12 @@
     + [Cheat Sheet](/docs/{{version}}/crud-cheat-sheet)
     + [Crud API](/docs/{{version}}/crud-api)
     + [Fluent API](/docs/{{version}}/crud-fluent-syntax)
-- [How To](/docs/{{version}}/crud-how-to)
+- [FAQ](/docs/{{version}}/crud-how-to)
 
 
 #### Add-ons
 
 - [Official Add-ons](/docs/{{version}}/add-ons-official)
-- [Community Add-ons](/docs/{{version}}/add-ons-community)
+- [Community Add-ons](https://backpackforlaravel.com/addons)
 - [How to Create an Add-on](/docs/{{version}}/add-ons-tutorial)
     + [Operation Add-on](/docs/{{version}}/add-ons-custom-operation)

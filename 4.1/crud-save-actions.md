@@ -38,7 +38,7 @@ $this->crud->addSaveAction([
     'visible' => function($crud) {
         return true;
     }, // customize when this save action is visible for the current operation
-    'referrer' => function($crud, $request, $itemId) {
+    'referrer_url' => function($crud, $request, $itemId) {
         return $crud->route;
     }, // override http_referrer_url
     'order' => 1, // change the order save actions are in
@@ -55,7 +55,7 @@ $this->crud->addSaveActions([
         'name' => 'save_action_one',
         'visible' => function($crud) {
             return true;
-        }
+        },
         'redirect' => function($crud, $request, $itemId) {
             return $crud->route;
         },
@@ -64,7 +64,7 @@ $this->crud->addSaveActions([
         'name' => 'save_action_two',
         'visible' => function($crud) {
             return true;
-        }
+        },
         'redirect' => function($crud, $request, $itemId) {
             return $crud->route;
         },
@@ -82,7 +82,7 @@ $this->crud->replaceSaveActions(
         'name' => 'save_action_one',
         'visible' => function($crud) {
             return true;
-        }
+        },
         'redirect' => function($crud, $request, $itemId) {
             return $crud->route;
         },
@@ -93,7 +93,7 @@ $this->crud->replaceSaveActions(
 
 #### removeSaveAction(string $saveAction)
 
-This allows you to remove a specific save action from save actions array. Provide the name of the save action that you would like to remove.
+This allows you to remove a specific save action from the save actions array. Provide the name of the save action that you would like to remove.
 ```php
 $this->crud->removeSaveAction('save_action_one');
 ```
